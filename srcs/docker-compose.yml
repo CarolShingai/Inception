@@ -1,12 +1,79 @@
+networks:
+  inception:
+    name: inception
+
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/cshingai/data/wordpress
+
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/cshingai/data/mariadb
+
 services:
+  wordpress:
+    depends_on:
+      - mariadb
+    image: wordpress:42sp
+    container_name: wordpress
+    env_file:
+      - .env
+    build:
+      context: ./requirements/wordpress
+      args:
+        - DB_NAME=${DB_NAME}
+        - TITLE=${TITLE}
+        - ADMIN_NAME=${ADMIN_NAME}
+        - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+        - ADMIN_EMAIL=${ADMIN_EMAIL}
+        - USER_NAME=${USER_NAME}
+        - USER_PASSWORD=${USER_PASSWORD}
+        - USER_EMAIL=${USER_EMAIL}
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    expose: 
+      - 9000
+    restart: on-failure
+
+  mariadb:
+    image: mariadb:42sp
+    container_name: mariadb
+    env_file:
+      - .env
+    build:
+      context: ./requirements/mariadb
+      args:
+        - ADMIN_NAME=${ADMIN_NAME}
+        - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+        - DB_NAME=${DB_NAME}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
+    expose:
+      - 3306
+    restart: on-failure
+
   nginx:
+    depends_on:
+      - mariadb
+      - wordpress
+    image: nginx:42sp
+    container_name: nginx
     build: ./requirements/nginx
     ports:
       - "443:443"
     volumes:
-      - ./requirements/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-  
-  mariadb:
-    build: ./requirements/mariadb
-    ports:
-      - "3306:3306"
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    restart: on-failure
