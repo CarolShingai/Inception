@@ -1,7 +1,7 @@
 USER = cshingai
 
-MARIA_DB_DIR = home/$(USER)/data/mariadb
-WORDPRESS_DB_DIR = home/$(USER)/data/wordpress
+MARIA_DB_DIR = /home/$(USER)/data/mariadb
+WORDPRESS_DB_DIR = /home/$(USER)/data/wordpress
 
 COMPOSE_FILE = srcs/docker-compose.yml
 DOCKER_COMPOSE_EXEC = docker-compose -f $(COMPOSE_FILE)
@@ -9,24 +9,14 @@ DOCKER_COMPOSE_EXEC = docker-compose -f $(COMPOSE_FILE)
 all: config up
 
 config:
-	@if [ ! -f $(ENV_FILE) ]; then \
-		echo "Creating .env file"; \
-		echo "LOGIN=$(LOGIN)" > $(ENV_FILE); \
-		echo "DOMAIN=$(LOGIN).42.fr" >> $(ENV_FILE); \
-		echo "" >> $(ENV_FILE); \
-		echo "ADMIN_NAME=$(LOGIN)" >> $(ENV_FILE); \
-		echo "ADMIN_PASSWORD=$(LOGIN)1234" >> $(ENV_FILE); \
-		echo "ADMIN_EMAIL=$(LOGIN)@email.com" >> $(ENV_FILE); \
-		echo "" >> $(ENV_FILE); \
-		echo "USER_NAME=user" >> $(ENV_FILE); \
-		echo "USER_PASSWORD=user" >> $(ENV_FILE); \
-		echo "USER_EMAIL=user@email.com" >> $(ENV_FILE); \
-		echo "" >> $(ENV_FILE); \
-		echo "TITLE=HOME PAGE" >> $(ENV_FILE); \
-		echo "" >> $(ENV_FILE); \
-		echo "DB_NAME=wordpress_db" >> $(ENV_FILE); \
+	mkdir -p $(MARIA_DB_DIR)
+	mkdir -p $(WORDPRESS_DB_DIR)
+	@if [ ! -f srcs/.env ]; then \
+		cp srcs/.env.example srcs/.env; \
+		sed -i '' 's/your_login/$(USER)/g' srcs/.env; \
+		echo ".env criado com LOGIN=$(USER)"; \
 	else \
-		echo ".env already exists"; \
+		echo ".env já existe"; \
 	fi
 build:
 	$(DOCKER_COMPOSE_EXEC) build
@@ -44,12 +34,12 @@ ls:
 	docker volume ls
 
 clean:
-	docker compose down --rmi all -v
+	$(DOCKER_COMPOSE_EXEC) down --rmi all -v
 	
 fclean: clean	
-	rm ./srcs/.env
-	docker system prune -a -v -f
-	sudo rm -rf home/$(USER)
+	rm -f ./srcs/.env
+	docker system prune -a --volumes -f
+	sudo rm -rf /home/$(USER)
 
 re: fclean all
 
