@@ -9,11 +9,11 @@ DOCKER_COMPOSE_EXEC = docker-compose -f $(COMPOSE_FILE)
 all: config up
 
 config:
-	mkdir -p $(MARIA_DB_DIR)
-	mkdir -p $(WORDPRESS_DB_DIR)
+	sudo mkdir -p $(MARIA_DB_DIR)
+	sudo mkdir -p $(WORDPRESS_DB_DIR)
 	@if [ ! -f srcs/.env ]; then \
 		cp srcs/.env.example srcs/.env; \
-		sed -i '' 's/your_login/$(USER)/g' srcs/.env; \
+		sed -i 's/your_login/$(USER)/g' srcs/.env; \
 		echo ".env criado com LOGIN=$(USER)"; \
 	else \
 		echo ".env já existe"; \

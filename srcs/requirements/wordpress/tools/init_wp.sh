@@ -1,11 +1,5 @@
 #!/bin/bash
 
-echo "Waiting for MariaDB..."
-# Check if MariaDB is up and running
-until mysqladmin ping -h mariadb -u"$DB_USER" -p"$DB_PASSWORD" --silent; do
-    sleep 1
-done
-
 # Configure WordPress if not already configured
 if [ ! -f /var/www/html/wp-config.php ]; then
     echo "Configuring WordPress..."
@@ -36,6 +30,5 @@ else
     echo "WordPress already configured."
 fi
 
-
-exec php-fpm8.1 -F
+exec php-fpm7.4 -F
 
