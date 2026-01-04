@@ -21,7 +21,7 @@ config:
 build:
 	$(DOCKER_COMPOSE_EXEC) build
 
-up: build
+up:
 	$(DOCKER_COMPOSE_EXEC) up -d
 
 down:
@@ -36,9 +36,10 @@ ls:
 clean:
 	$(DOCKER_COMPOSE_EXEC) down --rmi all -v
 	
-fclean: clean	
+fclean:
+	$(DOCKER_COMPOSE_EXEC) down --rmi all
+	docker system prune -a -f
 	rm -f ./srcs/.env
-	docker system prune -a --volumes -f
 	sudo rm -rf /home/$(USER)
 
 re: fclean all
