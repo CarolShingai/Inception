@@ -1,7 +1,7 @@
 FROM debian:oldstable
 
 RUN apt update && apt upgrade -y \
-    && apt install -y nginx openssl
+    && apt install nginx openssl -y
 
 # OPenSSL self-signed certificate generation
 RUN openssl req -x509 -nodes -days 365 \
@@ -11,7 +11,9 @@ RUN openssl req -x509 -nodes -days 365 \
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 443
+RUN chmod 755 /var/www
+
+RUN chown -R www-data:www-data /var/www
 
 CMD ["nginx", "-g", "daemon off;"]
 

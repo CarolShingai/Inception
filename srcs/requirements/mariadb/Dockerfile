@@ -14,11 +14,10 @@ RUN mkdir -p /var/run/mysql \
     && chmod 777 /var/run/mysql
 
 COPY tools/init_db.sh /usr/local/bin/init_db.sh
-COPY tools/init.sql /usr/local/bin/init.sql
 
 COPY conf/my.cnf /etc/mysql/my.cnf
 
-RUN chmod +x /usr/local/bin/init_db.sh && /usr/local/bin/init_db.sh
+RUN chmod 777 /usr/local/bin/init_db.sh && /usr/local/bin/init_db.sh
 
 # Exemplo de uso das variáveis de build
 RUN echo "Database: $DB_NAME, Admin: $ADMIN_NAME"
