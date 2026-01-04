@@ -11,10 +11,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod 755 /var/www/html
 
 RUN wget -O /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-	&& chmod +x /usr/local/bin/wp \
-	&& wp core download --allow-root --path=/var/www/html --debug
+	&& chmod +x /usr/local/bin/wp
 
-COPY /conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+COPY /conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 
 COPY /tools/init_wp.sh /usr/local/bin/init_wp.sh
 

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Baixa o WordPress se não estiver presente
+if [ ! -f /var/www/html/wp-config.php ]; then
+    echo "Downloading WordPress..."
+    wp core download --allow-root --path=/var/www/html
+fi
+
 # Configure WordPress if not already configured
 if [ ! -f /var/www/html/wp-config.php ]; then
     echo "Configuring WordPress..."
@@ -19,7 +25,7 @@ if [ ! -f /var/www/html/wp-config.php ]; then
         --admin_password=$ADMIN_PASSWORD \
         --admin_email=$ADMIN_EMAIL
 
-    wp user create --allow-root	\
+    wp user create --allow-root \
         --path=/var/www/html \
         "$USER_NAME" "$USER_EMAIL" \
         --user_pass=$USER_PASSWORD \
@@ -30,5 +36,5 @@ else
     echo "WordPress already configured."
 fi
 
-exec php-fpm7.4 -F
+exec php-fpm8.2 -F
 
